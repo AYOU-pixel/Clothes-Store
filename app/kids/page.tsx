@@ -1,18 +1,18 @@
 import { prisma } from '@/lib/prisma'
-import WomenProductsClient from "@/components/WomenProductsClient"
+import KidsProductsClient from "@/components/KidsProductsClient";
 
-export default async function WomenPage() {
+export default async function KidsPage() {
   try {
-    // Find women's category
-    const womenCategory = await prisma.category.findUnique({
-      where: { slug: "women" }
+    // Find kids' category
+    const kidsCategory = await prisma.category.findUnique({
+      where: { slug: "kids" }
     })
 
-    if (!womenCategory) {
+    if (!kidsCategory) {
       return (
         <div className="container mx-auto px-4 py-24 text-center">
           <h1 className="text-2xl font-light mb-4">Category Not Found</h1>
-          <p className="text-gray-600">The women's category could not be found.</p>
+          <p className="text-gray-600">The kids' category could not be found.</p>
         </div>
       )
     }
@@ -20,7 +20,7 @@ export default async function WomenPage() {
     // Fetch products with all necessary fields
     const products = await prisma.product.findMany({
       where: { 
-        categoryId: womenCategory.id,
+        categoryId: kidsCategory.id,
         inStock: true  // Only show in-stock products
       },
       orderBy: [
@@ -30,10 +30,10 @@ export default async function WomenPage() {
       ]
     })
 
-    return <WomenProductsClient products={products} />
+    return <KidsProductsClient products={products} />
     
   } catch (error) {
-    console.error('Error fetching women products:', error)
+    console.error('Error fetching kids products:', error)
     
     return (
       <div className="container mx-auto px-4 py-24 text-center">
