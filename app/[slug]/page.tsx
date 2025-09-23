@@ -80,7 +80,7 @@ export async function generateStaticParams() {
     take: 100 // Limit to prevent build timeouts, adjust as needed
   })
 
-  return products.map((product) => ({
+  return products.map((product: { slug: any }) => ({
     slug: product.slug,
   }))
 }
