@@ -1,10 +1,15 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from './generated/prisma'
 
-
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
+declare global {
+  // على Next.js App Router نستخدم هذا لتجنب multiple instances
+  var prisma: PrismaClient | undefined
 }
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient()
+// استخدم globalThis مباشرة مع الحماية ضد multiple instances
+export const prisma =
+  globalThis.prisma ??
+  new PrismaClient({
+    log: ['query', 'error', 'warn'], // اختياري لتصحيح الأخطاء
+  })
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma
