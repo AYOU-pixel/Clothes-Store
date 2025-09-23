@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { motion } from "framer-motion"
+import { useRouter } from "next/navigation" // ← إضافة هذا
 import {
   Card,
   CardTitle,
@@ -48,6 +49,13 @@ interface NewArrivalsClientProps {
 }
 
 export default function NewArrivalsClient({ products = [] }: NewArrivalsClientProps) {
+  const router = useRouter() // ← إضافة هذا
+
+  // دالة للانتقال إلى صفحة المنتج
+  const handleProductClick = (productSlug: string) => {
+    router.push(`/${productSlug}`)
+  }
+
   // Handle empty products
   if (!products || products.length === 0) {
     return (
@@ -149,6 +157,7 @@ export default function NewArrivalsClient({ products = [] }: NewArrivalsClientPr
               }}
               viewport={{ once: true, amount: 0.1 }}
               className="group cursor-pointer"
+              onClick={() => handleProductClick(product.slug)} // ← إضافة هذا
             >
               <Card className="border-0 shadow-none bg-transparent overflow-hidden">
                 <CardContent className="p-0">
@@ -164,7 +173,7 @@ export default function NewArrivalsClient({ products = [] }: NewArrivalsClientPr
                           src={`https://res.cloudinary.com/dpj5r6jrg/image/upload/${product.mainImage}.jpg`}
                           alt={product.name}
                           fill
-                          className="object-cover transition-all duration-700 group-hover:contrast-105 group-hover:brightness-95"
+                          className="object-cover transition-all duration-700 group-hover:contrast-105 group-hover:brightness-95 cursor-pointer" // ← إضافة cursor-pointer
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           priority={index < 6} // Priority loading for first 6 images
                         />
@@ -232,6 +241,10 @@ export default function NewArrivalsClient({ products = [] }: NewArrivalsClientPr
                         <Button 
                           className="w-full h-14 bg-black/90 backdrop-blur-sm text-white border-0 hover:bg-black transition-all duration-300 font-light text-xs tracking-[0.1em] uppercase rounded-none"
                           disabled={!product.inStock}
+                          onClick={(e) => {
+                            e.stopPropagation() // ← منع انتشار الحدث إلى العنصر الأب
+                            // يمكنك إضافة وظيفة Add to Cart هنا لاحقاً
+                          }}
                         >
                           {product.inStock ? 'Add to Cart' : 'Out of Stock'}
                         </Button>
@@ -248,6 +261,10 @@ export default function NewArrivalsClient({ products = [] }: NewArrivalsClientPr
                           size="sm"
                           variant="secondary"
                           className="w-8 h-8 p-0 bg-white/90 backdrop-blur-sm border border-black/10 hover:bg-white text-black rounded-none"
+                          onClick={(e) => {
+                            e.stopPropagation() // ← منع الانتقال إلى صفحة المنتج
+                            // يمكنك إضافة وظيفة Quick View هنا لاحقاً
+                          }}
                         >
                           <span className="text-xs">+</span>
                         </Button>
@@ -279,7 +296,8 @@ export default function NewArrivalsClient({ products = [] }: NewArrivalsClientPr
                     initial={{ opacity: 0.8 }}
                     whileHover={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
-                    className="w-full"
+                    className="w-full cursor-pointer" // ← إضافة cursor-pointer
+                    onClick={() => handleProductClick(product.slug)} // ← إضافة هذا أيضاً
                   >
                     <CardTitle className="text-sm font-light tracking-[0.05em] mb-2 text-black uppercase">
                       {product.name}

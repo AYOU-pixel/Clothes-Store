@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { motion } from "framer-motion"
+import { useRouter } from "next/navigation" // ← إضافة هذا
 import {
   Card,
   CardTitle,
@@ -13,7 +14,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 
-// Updated interface to match the new schema
 interface Product {
   id: string
   name: string
@@ -44,6 +44,13 @@ interface WomenProductsClientProps {
 }
 
 export default function WomenProductsClient({ products = [] }: WomenProductsClientProps) {
+  const router = useRouter() // ← إضافة هذا
+
+  // دالة للانتقال إلى صفحة المنتج
+  const handleProductClick = (productSlug: string) => {
+    router.push(`/${productSlug}`)
+  }
+
   // Handle empty products
   if (!products || products.length === 0) {
     return (
@@ -70,7 +77,7 @@ export default function WomenProductsClient({ products = [] }: WomenProductsClie
 
   return (
     <section className="py-24 container mx-auto px-4" style={{ fontFamily: '"Inter", sans-serif' }}>
-      {/* Section Title - Pure Zara style - Matching FeaturedProducts exactly */}
+      {/* Section Title */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -88,15 +95,13 @@ export default function WomenProductsClient({ products = [] }: WomenProductsClie
         </p>
       </motion.div>
 
-      {/* Products Grid - Matching FeaturedProducts grid exactly */}
+      {/* Products Grid */}
       <div className="grid gap-8 md:gap-12 sm:grid-cols-2 md:grid-cols-3">
         {products.map((product, index) => {
-          // Calculate if there's a discount
           const hasDiscount = product.currentPrice < product.originalPrice
           const discountPercentage = product.discountPercent || 
             (hasDiscount ? Math.round(((product.originalPrice - product.currentPrice) / product.originalPrice) * 100) : 0)
           
-          // Determine which tag to show (priority: onSale > isNew > isFeatured)
           let displayTag = null
           if (product.onSale && hasDiscount) {
             displayTag = `${discountPercentage}% OFF`
@@ -113,11 +118,12 @@ export default function WomenProductsClient({ products = [] }: WomenProductsClie
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ 
                 duration: 0.8, 
-                delay: index * 0.2, // Matching FeaturedProducts delay
+                delay: index * 0.2,
                 ease: [0.25, 0.46, 0.45, 0.94]
               }}
               viewport={{ once: true, amount: 0.1 }}
               className="group cursor-pointer"
+              onClick={() => handleProductClick(product.slug)} // ← إضافة هذا
             >
               <Card className="border-0 shadow-none bg-transparent overflow-hidden">
                 <CardContent className="p-0">
@@ -133,16 +139,16 @@ export default function WomenProductsClient({ products = [] }: WomenProductsClie
                           src={`https://res.cloudinary.com/dpj5r6jrg/image/upload/${product.mainImage}.jpg`}
                           alt={product.name}
                           fill
-                          className="object-cover transition-all duration-700 group-hover:contrast-105 group-hover:brightness-95"
+                          className="object-cover transition-all duration-700 group-hover:contrast-105 group-hover:brightness-95 cursor-pointer" // ← إضافة cursor-pointer
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          priority={index < 3} // Priority loading for first 3 images to match grid
+                          priority={index < 3}
                         />
                         
                         {/* Gradient overlay on hover */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                       </motion.div>
                       
-                      {/* Product Tag - Single tag like FeaturedProducts */}
+                      {/* Product Tag */}
                       {displayTag && (
                         <motion.div
                           initial={{ opacity: 0, x: -10 }}
@@ -169,6 +175,10 @@ export default function WomenProductsClient({ products = [] }: WomenProductsClie
                         <Button 
                           className="w-full h-14 bg-black/90 backdrop-blur-sm text-white border-0 hover:bg-black transition-all duration-300 font-light text-xs tracking-[0.1em] uppercase rounded-none"
                           disabled={!product.inStock}
+                          onClick={(e) => {
+                            e.stopPropagation() // ← منع انتشار الحدث إلى العنصر الأب
+                            // يمكنك إضافة وظيفة Add to Cart هنا لاحقاً
+                          }}
                         >
                           {product.inStock ? 'Add to Cart' : 'Out of Stock'}
                         </Button>
@@ -185,6 +195,10 @@ export default function WomenProductsClient({ products = [] }: WomenProductsClie
                           size="sm"
                           variant="secondary"
                           className="w-8 h-8 p-0 bg-white/90 backdrop-blur-sm border border-black/10 hover:bg-white text-black rounded-none"
+                          onClick={(e) => {
+                            e.stopPropagation() // ← منع الانتقال إلى صفحة المنتج
+                            // يمكنك إضافة وظيفة Quick View هنا لاحقاً
+                          }}
                         >
                           <span className="text-xs">+</span>
                         </Button>
@@ -194,12 +208,13 @@ export default function WomenProductsClient({ products = [] }: WomenProductsClie
                 </CardContent>
 
                 <CardFooter className="p-0 pt-6">
-                  {/* Product Info - Matching FeaturedProducts layout exactly */}
+                  {/* Product Info */}
                   <motion.div
                     initial={{ opacity: 0.8 }}
                     whileHover={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
-                    className="w-full"
+                    className="w-full cursor-pointer" // ← إضافة cursor-pointer
+                    onClick={() => handleProductClick(product.slug)} // ← إضافة هذا أيضاً
                   >
                     <CardTitle className="text-sm font-light tracking-[0.05em] mb-2 text-black uppercase">
                       {product.name}
@@ -210,7 +225,7 @@ export default function WomenProductsClient({ products = [] }: WomenProductsClie
                     </CardDescription>
                     
                     <div className="flex items-center justify-between">
-                      {/* Price display - simplified like FeaturedProducts */}
+                      {/* Price display */}
                       {hasDiscount ? (
                         <div className="flex items-center space-x-2">
                           <span className="text-sm font-normal tracking-wide text-black">
@@ -226,10 +241,9 @@ export default function WomenProductsClient({ products = [] }: WomenProductsClie
                         </span>
                       )}
                       
-                      {/* Color options - Matching FeaturedProducts style exactly */}
+                      {/* Color options */}
                       <div className="flex space-x-1">
                         {product.colors.slice(0, 3).map((color, colorIndex) => {
-                          // Better color mapping for display
                           const colorMap: { [key: string]: string } = {
                             'black': '#000000',
                             'white': '#ffffff',
@@ -257,7 +271,6 @@ export default function WomenProductsClient({ products = [] }: WomenProductsClie
                             />
                           )
                         })}
-                        {/* Add default colors if less than 3 colors available */}
                         {product.colors.length === 1 && (
                           <>
                             <div className="w-3 h-3 bg-gray-400 border border-gray-300"></div>
@@ -277,7 +290,7 @@ export default function WomenProductsClient({ products = [] }: WomenProductsClie
         })}
       </div>
 
-      {/* View All section - Matching FeaturedProducts exactly */}
+      {/* View All section */}
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
