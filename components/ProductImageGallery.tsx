@@ -1,4 +1,3 @@
-//ProductImageGallery.tsx
 "use client"
 
 import { useState } from "react"
@@ -38,8 +37,8 @@ export default function ProductImageGallery({
   return (
     <div className="w-full">
       {/* Main Image */}
-      <div className="relative group mb-3 sm:mb-4">
-        <AspectRatio ratio={3/4} className="bg-neutral-50">
+      <div className="relative group mb-2 xs:mb-3 sm:mb-4 md:mb-5">
+        <AspectRatio ratio={4/5} className="bg-neutral-50">
           <AnimatePresence mode="wait">
             <motion.div
               key={selectedImageIndex}
@@ -57,7 +56,7 @@ export default function ProductImageGallery({
                 alt={`${productName} - Image ${selectedImageIndex + 1}`}
                 fill
                 className="object-cover"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
+                sizes="(max-width: 480px) 100vw, (max-width: 768px) 80vw, (max-width: 1024px) 60vw, 50vw"
                 priority
               />
             </motion.div>
@@ -69,25 +68,25 @@ export default function ProductImageGallery({
               <motion.button
                 initial={{ opacity: 0 }}
                 whileHover={{ opacity: 1 }}
-                className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-sm"
+                className="absolute left-2 xs:left-3 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-sm rounded-full"
                 onClick={prevImage}
               >
-                <ChevronLeft size={16} className="text-neutral-800" />
+                <ChevronLeft size={14} className="text-neutral-800" />
               </motion.button>
               
               <motion.button
                 initial={{ opacity: 0 }}
                 whileHover={{ opacity: 1 }}
-                className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-sm"
+                className="absolute right-2 xs:right-3 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all duration-200 opacity-0 group-hover:opacity-100 shadow-sm rounded-full"
                 onClick={nextImage}
               >
-                <ChevronRight size={16} className="text-neutral-800" />
+                <ChevronRight size={14} className="text-neutral-800" />
               </motion.button>
             </>
           )}
 
           {/* Image Counter - Zara style */}
-          <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 bg-neutral-900/70 text-white px-2.5 py-1 text-[10px] sm:text-xs font-light tracking-wider">
+          <div className="absolute bottom-2 xs:bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 bg-neutral-900/70 text-white px-2 xs:px-2.5 py-0.5 xs:py-1 text-[9px] xs:text-[10px] sm:text-xs font-light tracking-wider rounded">
             {selectedImageIndex + 1}/{allImages.length}
           </div>
 
@@ -96,10 +95,10 @@ export default function ProductImageGallery({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onWishlistToggle}
-            className="absolute top-3 sm:top-4 right-3 sm:right-4 w-9 h-9 sm:w-10 sm:h-10 bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all duration-200 rounded-full shadow-sm"
+            className="absolute top-2 xs:top-3 sm:top-4 right-2 xs:right-3 sm:right-4 w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all duration-200 rounded-full shadow-sm"
           >
             <Heart 
-              size={14} 
+              size={12} 
               className={isWishlisted ? "fill-neutral-800 text-neutral-800" : "text-neutral-800"}
             />
           </motion.button>
@@ -108,14 +107,14 @@ export default function ProductImageGallery({
 
       {/* Image Thumbnails - Zara horizontal scroll */}
       {allImages.length > 1 && (
-        <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex gap-1 xs:gap-2 sm:gap-3 overflow-x-auto pb-1 xs:pb-2 scrollbar-hide">
           {allImages.map((image, index) => (
             <motion.button
               key={index}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setSelectedImageIndex(index)}
-              className={`relative flex-shrink-0 w-14 h-[70px] sm:w-16 sm:h-20 md:w-18 md:h-[90px] overflow-hidden transition-all duration-200 ${
+              className={`relative flex-shrink-0 w-12 h-16 xs:w-14 xs:h-[70px] sm:w-16 sm:h-20 md:w-18 md:h-[90px] overflow-hidden transition-all duration-200 ${
                 selectedImageIndex === index 
                   ? 'ring-1 ring-neutral-800 shadow-sm' 
                   : 'ring-1 ring-neutral-200 hover:ring-neutral-400'
@@ -126,7 +125,7 @@ export default function ProductImageGallery({
                 alt={`${productName} thumbnail ${index + 1}`}
                 fill
                 className="object-cover"
-                sizes="(max-width: 640px) 56px, (max-width: 768px) 64px, 72px"
+                sizes="(max-width: 480px) 48px, (max-width: 640px) 56px, (max-width: 768px) 64px, 72px"
               />
               {selectedImageIndex === index && (
                 <div className="absolute inset-0 bg-neutral-900/10" />
