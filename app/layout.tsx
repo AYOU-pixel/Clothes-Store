@@ -5,6 +5,7 @@ import "./globals.css"
 import { ThemeProvider } from "next-themes"
 import Header from "@/components/Header/Header"
 import Footer from "@/components/Footer"
+import { Providers } from "./Providers" // import client wrapper
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,24 +35,27 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Header />
+        {/* Client-side providers */}
+        <Providers>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Header />
 
-          {/* Main Content */}
-          <main className="min-h-screen">{children}</main>
+            {/* Main Content */}
+            <main className="min-h-screen">{children}</main>
 
-         
-          <Footer />
-        </ThemeProvider>
+            <Footer />
+          </ThemeProvider>
+        </Providers>
       </body>
     </html>
   )
 }
+
 
 
 

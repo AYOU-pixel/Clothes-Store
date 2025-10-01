@@ -31,38 +31,38 @@ model Product {
   name        String
   slug        String   @unique
   description String?
-  
+
   // Pricing
   originalPrice Float
   currentPrice  Float
   currency      String   @default("USD")
   discountPercent Float?
-  
+
   // Media
   mainImage   String
   images      String[]
-  
+
   // Variants
   colors      String[]
   sizes       String[]
-  
+
   // Inventory
   inStock     Boolean  @default(true)
   quantity    Int      @default(0)
-  
+
   // Category relationship
   categoryId  String   @db.ObjectId 
   category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  
+
   // Marketing flags
   isNew       Boolean  @default(false)
   onSale      Boolean  @default(false)
   isFeatured  Boolean  @default(false)
-  
+
   // SEO & Organization
   tags        String[]
   sku         String?  @unique
-  
+
   // Timestamps
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -93,4 +93,59 @@ model Editorial {
 
   @@index([isPublished])
   @@index([publishedAt])
+}
+
+// 👤 User model (NextAuth)
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+
+  accounts      Account[]
+  sessions      Session[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// 🔑 Account model (NextAuth)
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+// 🕒 Session model (NextAuth)
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// 🔐 VerificationToken model (NextAuth)
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@index([identifier])
 }
