@@ -1,10 +1,11 @@
-import NextAuth from "next-auth"
+import NextAuth, { AuthOptions } from "next-auth"
 import Google from "next-auth/providers/google"
 import GitHub from "next-auth/providers/github"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 
-const handler = NextAuth({
+// Define authOptions with explicit AuthOptions type
+export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     Google({
@@ -17,11 +18,14 @@ const handler = NextAuth({
     }),
   ],
   session: {
-    strategy: "jwt", // JWT keeps it lightweight
+    strategy: "jwt" as const, // Explicitly set to "jwt" to match SessionStrategy
   },
   pages: {
     signIn: "/user", // user login page
   },
-})
+}
+
+// Initialize NextAuth with authOptions
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }

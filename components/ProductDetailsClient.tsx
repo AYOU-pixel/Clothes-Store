@@ -1,9 +1,9 @@
-// ProductDetailsClient.tsx
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useSession } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -19,7 +19,8 @@ import {
   Shield,
   Ruler,
   ChevronDown,
-  Star
+  Star,
+  Heart
 } from "lucide-react"
 import ProductImageGallery from "./ProductImageGallery"
 
@@ -55,22 +56,53 @@ interface Product {
 interface ProductDetailsClientProps {
   product: Product
   relatedProducts?: Product[]
+  isWishlisted?: boolean // Added to receive initial wishlist status
 }
 
-export default function ProductDetailsClient({ product, relatedProducts = [] }: ProductDetailsClientProps) {
+export default function ProductDetailsClient({ product, relatedProducts = [], isWishlisted = false }: ProductDetailsClientProps) {
+  const { data: session } = useSession()
   const [selectedColor, setSelectedColor] = useState(product.colors[0] || '')
   const [selectedSize, setSelectedSize] = useState('')
   const [quantity, setQuantity] = useState(1)
-  const [isWishlisted, setIsWishlisted] = useState(false)
+  const [isWishlistedState, setIsWishlisted] = useState(isWishlisted)
   const [showSizeGuide, setShowSizeGuide] = useState(false)
   const [showProductDetails, setShowProductDetails] = useState(false)
   const [showCareInfo, setCareInfo] = useState(false)
   const [showDelivery, setShowDelivery] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   // Calculate discount
   const hasDiscount = product.currentPrice < product.originalPrice
   const discountPercentage = product.discountPercent || 
     (hasDiscount ? Math.round(((product.originalPrice - product.currentPrice) / product.originalPrice) * 100) : 0)
+
+  // Handle wishlist toggle
+  const handleWishlistToggle = useCallback(async () => {
+    if (!session?.user) {
+      // Redirect to sign-in if not authenticated
+      window.location.href = '/user'
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/wishlist', {
+        method: isWishlistedState ? 'DELETE' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: product.id }),
+      })
+
+      if (response.ok) {
+        setIsWishlisted(!isWishlistedState)
+      } else {
+        console.error('Failed to update wishlist')
+      }
+    } catch (error) {
+      console.error('Error updating wishlist:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [isWishlistedState, product.id, session])
 
   // Zara-style color mapping with more sophisticated colors
   const colorMap: { [key: string]: string } = {
@@ -136,8 +168,8 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }: 
               images={product.images}
               productName={product.name}
               mainImage={product.mainImage}
-              isWishlisted={isWishlisted}
-              onWishlistToggle={() => setIsWishlisted(!isWishlisted)}
+              isWishlisted={isWishlistedState}
+              onWishlistToggle={handleWishlistToggle}
             />
           </div>
 
@@ -348,27 +380,43 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }: 
                 </div>
               </motion.div>
 
-              {/* Add to Cart - Premium Zara button */}
+              {/* Add to Cart and Wishlist Buttons */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
                 className="space-y-4 pt-2"
               >
-                <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                  <Button 
-                    size="lg"
-                    className="w-full h-12 sm:h-14 bg-neutral-900 text-white hover:bg-neutral-800 transition-all duration-300 font-light text-xs tracking-[0.15em] uppercase border-0"
-                    disabled={!product.inStock || (product.sizes.length > 0 && !selectedSize)}
-                  >
-                    {!product.inStock 
-                      ? 'Out of Stock' 
-                      : product.sizes.length > 0 && !selectedSize 
-                        ? 'Please select size' 
-                        : 'Add to Bag'
-                    }
-                  </Button>
-                </motion.div>
+                <div className="flex space-x-4">
+                  <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} className="flex-1">
+                    <Button 
+                      size="lg"
+                      className="w-full h-12 sm:h-14 bg-neutral-900 text-white hover:bg-neutral-800 transition-all duration-300 font-light text-xs tracking-[0.15em] uppercase border-0"
+                      disabled={!product.inStock || (product.sizes.length > 0 && !selectedSize)}
+                    >
+                      {!product.inStock 
+                        ? 'Out of Stock' 
+                        : product.sizes.length > 0 && !selectedSize 
+                          ? 'Please select size' 
+                          : 'Add to Bag'
+                      }
+                    </Button>
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className={`h-12 sm:h-14 w-12 sm:w-14 border-neutral-200 hover:border-neutral-900 transition-all duration-300 ${isWishlistedState ? 'bg-neutral-100' : ''}`}
+                      onClick={handleWishlistToggle}
+                      disabled={isLoading}
+                    >
+                      <Heart 
+                        size={16} 
+                        className={isWishlistedState ? 'fill-neutral-800 text-neutral-800' : 'text-neutral-800'}
+                      />
+                    </Button>
+                  </motion.div>
+                </div>
 
                 {/* Stock Status */}
                 {product.quantity <= 5 && product.quantity > 0 && (

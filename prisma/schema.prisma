@@ -25,6 +25,22 @@ model Category {
   @@index([sortOrder])
 }
 
+// 👤 User model (NextAuth)
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+
+  accounts      Account[]
+  sessions      Session[]
+  wishlists     Wishlist[] // Added relation to Wishlist
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
 // 👕 Products (Zara-style with all necessary fields)
 model Product {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -63,6 +79,9 @@ model Product {
   tags        String[]
   sku         String?  @unique
 
+  // Wishlist relation
+  wishlists   Wishlist[] // Added relation to Wishlist
+
   // Timestamps
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -93,21 +112,6 @@ model Editorial {
 
   @@index([isPublished])
   @@index([publishedAt])
-}
-
-// 👤 User model (NextAuth)
-model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-
-  accounts      Account[]
-  sessions      Session[]
-
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
 }
 
 // 🔑 Account model (NextAuth)
@@ -148,4 +152,19 @@ model VerificationToken {
   expires    DateTime
 
   @@index([identifier])
+}
+
+// 🩶 Wishlist model
+model Wishlist {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  productId String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+  @@index([userId])
+  @@index([productId])
 }

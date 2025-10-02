@@ -1,6 +1,8 @@
-// app/[slug]/page.tsx
 import { notFound } from 'next/navigation'
+import React from 'react'
 import { prisma } from '@/lib/prisma'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import ProductDetailsClient from '@/components/ProductDetailsClient'
 import type { Metadata } from 'next'
 
@@ -93,6 +95,8 @@ export default async function ProductPage({ params }: Props) {
   const { slug } = await params // 👈 نفس الحاجة: نستعمل await
 
   try {
+    const session = await getServerSession(authOptions)
+
     const product = await prisma.product.findUnique({
       where: { slug },
       include: {
@@ -104,11 +108,33 @@ export default async function ProductPage({ params }: Props) {
       notFound()
     }
 
+    // Check if the product is in the user's wishlist
+    let isWishlisted = false
+    if (session?.user?.email) {
+      const user = await prisma.user.findUnique({
+        where: { email: session.user.email },
+      })
+      if (user) {
+        const wishlistItem = await prisma.wishlist.findUnique({
+          where: {
+            userId_productId: {
+              userId: user.id,
+              productId: product.id,
+            },
+          },
+        })
+        isWishlisted = !!wishlistItem
+      }
+    }
+
     const relatedProducts = await prisma.product.findMany({
       where: {
         categoryId: product.categoryId,
         id: { not: product.id },
         inStock: true,
+      },
+      include: {
+        category: { select: { name: true, slug: true } },
       },
       take: 8,
       orderBy: [
@@ -121,6 +147,7 @@ export default async function ProductPage({ params }: Props) {
       <ProductDetailsClient
         product={product}
         relatedProducts={relatedProducts}
+        isWishlisted={isWishlisted}
       />
     )
   } catch (error) {
