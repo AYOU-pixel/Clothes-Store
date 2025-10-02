@@ -2,18 +2,18 @@ import { notFound } from 'next/navigation'
 import React from 'react'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { authOptions } from '@/lib/auth' 
 import ProductDetailsClient from '@/components/ProductDetailsClient'
 import type { Metadata } from 'next'
 
 // نوع props
 type Props = {
-  params: Promise<{ slug: string }> // 👈 خاص params يكون Promise
+  params: Promise<{ slug: string }> 
 }
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params // 👈 نستخرج slug بالـ await
+  const { slug } = await params 
 
   const product = await prisma.product.findUnique({
     where: { slug },
@@ -95,7 +95,7 @@ export default async function ProductPage({ params }: Props) {
   const { slug } = await params // 👈 نفس الحاجة: نستعمل await
 
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions) // ✅ Now using the correct import
 
     const product = await prisma.product.findUnique({
       where: { slug },
