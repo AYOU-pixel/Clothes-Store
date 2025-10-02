@@ -1,12 +1,12 @@
 import { notFound } from 'next/navigation'
 import React from 'react'
 import { prisma } from '@/lib/prisma'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth' 
 import ProductDetailsClient from '@/components/ProductDetailsClient'
 import type { Metadata } from 'next'
 
-// نوع props
+// Add this to force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 type Props = {
   params: Promise<{ slug: string }> 
 }
@@ -92,11 +92,10 @@ export async function generateStaticParams() {
 
 // صفحة المنتج
 export default async function ProductPage({ params }: Props) {
-  const { slug } = await params // 👈 نفس الحاجة: نستعمل await
+  const { slug } = await params
 
   try {
-    const session = await getServerSession(authOptions) // ✅ Now using the correct import
-
+    // Remove getServerSession to avoid dynamic server usage
     const product = await prisma.product.findUnique({
       where: { slug },
       include: {
@@ -108,24 +107,8 @@ export default async function ProductPage({ params }: Props) {
       notFound()
     }
 
-    // Check if the product is in the user's wishlist
-    let isWishlisted = false
-    if (session?.user?.email) {
-      const user = await prisma.user.findUnique({
-        where: { email: session.user.email },
-      })
-      if (user) {
-        const wishlistItem = await prisma.wishlist.findUnique({
-          where: {
-            userId_productId: {
-              userId: user.id,
-              productId: product.id,
-            },
-          },
-        })
-        isWishlisted = !!wishlistItem
-      }
-    }
+    // Remove wishlist check for static generation
+    const isWishlisted = false
 
     const relatedProducts = await prisma.product.findMany({
       where: {
@@ -159,10 +142,8 @@ export default async function ProductPage({ params }: Props) {
         <p className="text-gray-600 mb-8">
           We&apos;re having trouble loading this product. Please try again later.
         </p>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-6 py-2 bg-transparent border border-black text-black hover:bg-black hover:text-white transition-all duration-500 font-light text-xs tracking-[0.1em] uppercase"
-        >
+        {/* Remove onClick handler - move this to a client component if needed */}
+        <button className="px-6 py-2 bg-transparent border border-black text-black hover:bg-black hover:text-white transition-all duration-500 font-light text-xs tracking-[0.1em] uppercase">
           Refresh Page
         </button>
       </div>
