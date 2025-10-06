@@ -32,59 +32,41 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-
   accounts      Account[]
   sessions      Session[]
-  wishlists     Wishlist[] // Added relation to Wishlist
-
+  wishlists     Wishlist[]
+  cart          Cart?     // One-to-one relation to Cart
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
 
 // 👕 Products (Zara-style with all necessary fields)
 model Product {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  slug        String   @unique
-  description String?
-
-  // Pricing
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  slug          String     @unique
+  description   String?
   originalPrice Float
   currentPrice  Float
-  currency      String   @default("USD")
+  currency      String     @default("USD")
   discountPercent Float?
-
-  // Media
-  mainImage   String
-  images      String[]
-
-  // Variants
-  colors      String[]
-  sizes       String[]
-
-  // Inventory
-  inStock     Boolean  @default(true)
-  quantity    Int      @default(0)
-
-  // Category relationship
-  categoryId  String   @db.ObjectId 
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  // Marketing flags
-  isNew       Boolean  @default(false)
-  onSale      Boolean  @default(false)
-  isFeatured  Boolean  @default(false)
-
-  // SEO & Organization
-  tags        String[]
-  sku         String?  @unique
-
-  // Wishlist relation
-  wishlists   Wishlist[] // Added relation to Wishlist
-
-  // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  mainImage     String
+  images        String[]
+  colors        String[]
+  sizes         String[]
+  inStock       Boolean    @default(true)
+  quantity      Int        @default(0)
+  categoryId    String     @db.ObjectId 
+  category      Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  isNew         Boolean    @default(false)
+  onSale        Boolean    @default(false)
+  isFeatured    Boolean    @default(false)
+  tags          String[]
+  sku           String?    @unique
+  wishlists     Wishlist[] // Relation to Wishlist
+  cartItems     CartItem[] // Relation to CartItem
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
   @@index([categoryId])
   @@index([isNew])
@@ -128,8 +110,7 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -140,8 +121,7 @@ model Session {
   sessionToken String   @unique
   userId       String   @db.ObjectId
   expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // 🔐 VerificationToken model (NextAuth)
@@ -166,5 +146,32 @@ model Wishlist {
 
   @@unique([userId, productId])
   @@index([userId])
+  @@index([productId])
+}
+
+// 🛒 Cart model
+model Cart {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String     @unique @db.ObjectId // Added @unique for one-to-one
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+// 🛍️ CartItem model
+model CartItem {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  cartId        String   @db.ObjectId
+  productId     String   @db.ObjectId
+  quantity      Int      @default(1)
+  selectedSize  String?
+  selectedColor String?
+  cart          Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([cartId])
   @@index([productId])
 }

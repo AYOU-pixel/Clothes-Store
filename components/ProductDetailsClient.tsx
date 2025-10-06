@@ -392,13 +392,47 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
                     <Button 
                       size="lg"
                       className="w-full h-12 sm:h-14 bg-neutral-900 text-white hover:bg-neutral-800 transition-all duration-300 font-light text-xs tracking-[0.15em] uppercase border-0"
-                      disabled={!product.inStock || (product.sizes.length > 0 && !selectedSize)}
+                      disabled={!product.inStock || (product.sizes.length > 0 && !selectedSize) || isLoading}
+                      onClick={async () => {
+                        if (!session?.user) {
+                          window.location.href = '/user';
+                          return;
+                        }
+
+                        setIsLoading(true);
+                        try {
+                          const response = await fetch('/api/cart', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              productId: product.id,
+                              quantity,
+                              selectedSize,
+                              selectedColor,
+                            }),
+                          });
+
+                          if (response.ok) {
+                            // Dispatch custom event to notify Header
+                            window.dispatchEvent(new CustomEvent('cartUpdated'));
+                          } else {
+                            const errorData = await response.json();
+                            console.error('Failed to add to cart:', errorData.error);
+                          }
+                        } catch (error) {
+                          console.error('Error adding to cart:', error);
+                        } finally {
+                          setIsLoading(false);
+                        }
+                      }}
                     >
                       {!product.inStock 
                         ? 'Out of Stock' 
                         : product.sizes.length > 0 && !selectedSize 
                           ? 'Please select size' 
-                          : 'Add to Bag'
+                          : isLoading
+                            ? 'Adding...'
+                            : 'Add to Bag'
                       }
                     </Button>
                   </motion.div>
