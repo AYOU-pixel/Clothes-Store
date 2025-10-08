@@ -7,8 +7,6 @@ import { useSession } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Separator } from "@/components/ui/separator"
 import { 
   Share2, 
@@ -19,10 +17,10 @@ import {
   Shield,
   Ruler,
   ChevronDown,
-  Star,
   Heart
 } from "lucide-react"
 import ProductImageGallery from "./ProductImageGallery"
+import RelatedProductsSection from './RelatedProductsSection'
 
 interface Product {
   id: string
@@ -55,8 +53,8 @@ interface Product {
 
 interface ProductDetailsClientProps {
   product: Product
-  relatedProducts?: Product[]
-  isWishlisted?: boolean // Added to receive initial wishlist status
+  relatedProducts?: Product[] // Add relatedProducts as an optional prop
+  isWishlisted?: boolean
 }
 
 export default function ProductDetailsClient({ product, relatedProducts = [], isWishlisted = false }: ProductDetailsClientProps) {
@@ -71,15 +69,12 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
   const [showDelivery, setShowDelivery] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  // Calculate discount
   const hasDiscount = product.currentPrice < product.originalPrice
   const discountPercentage = product.discountPercent || 
     (hasDiscount ? Math.round(((product.originalPrice - product.currentPrice) / product.originalPrice) * 100) : 0)
 
-  // Handle wishlist toggle
   const handleWishlistToggle = useCallback(async () => {
     if (!session?.user) {
-      // Redirect to sign-in if not authenticated
       window.location.href = '/user'
       return
     }
@@ -104,7 +99,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
     }
   }, [isWishlistedState, product.id, session])
 
-  // Zara-style color mapping with more sophisticated colors
   const colorMap: { [key: string]: string } = {
     'black': '#0a0a0a',
     'white': '#fafafa',
@@ -139,7 +133,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
 
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-      {/* Breadcrumb Navigation - Zara minimalist style */}
       <div className="border-b border-neutral-100">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           <nav className="flex items-center space-x-2 text-[10px] sm:text-xs uppercase tracking-[0.1em] font-light">
@@ -162,7 +155,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         <div className="grid lg:grid-cols-12 gap-6 lg:gap-16 xl:gap-20">
-          {/* Left - Image Gallery */}
           <div className="lg:col-span-7 xl:col-span-6">
             <ProductImageGallery
               images={product.images}
@@ -173,17 +165,14 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
             />
           </div>
 
-          {/* Right - Product Information */}
           <div className="lg:col-span-5 xl:col-span-6 lg:pl-4">
             <div className="sticky top-8 space-y-6 lg:space-y-8">
-              {/* Product Header */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
                 className="space-y-4 sm:space-y-5"
               >
-                {/* Category and Share */}
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     {product.category && (
@@ -209,7 +198,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
                   </motion.div>
                 </div>
 
-                {/* Product Badges */}
                 <div className="flex flex-wrap gap-2">
                   {product.isNew && (
                     <Badge className="bg-neutral-900 text-white border-0 px-2.5 py-1 text-[10px] font-light tracking-wide">
@@ -228,7 +216,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
                   )}
                 </div>
 
-                {/* Price - Zara sophisticated styling */}
                 <div className="flex items-baseline space-x-3 pt-2">
                   <span className="text-lg sm:text-xl font-normal text-neutral-900 tracking-tight">
                     ${product.currentPrice.toFixed(2)}
@@ -245,7 +232,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
                   )}
                 </div>
 
-                {/* Description */}
                 {product.description && (
                   <p className="text-sm text-neutral-600 leading-relaxed font-light max-w-lg">
                     {product.description}
@@ -253,7 +239,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
                 )}
               </motion.div>
 
-              {/* Color Selection - Enhanced Zara style */}
               {product.colors.length > 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -302,7 +287,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
                 </motion.div>
               )}
 
-              {/* Size Selection - Premium Zara style */}
               {product.sizes.length > 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -346,7 +330,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
                 </motion.div>
               )}
 
-              {/* Quantity - Refined minimal design */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -380,7 +363,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
                 </div>
               </motion.div>
 
-              {/* Add to Cart and Wishlist Buttons */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -413,7 +395,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
                           });
 
                           if (response.ok) {
-                            // Dispatch custom event to notify Header
                             window.dispatchEvent(new CustomEvent('cartUpdated'));
                           } else {
                             const errorData = await response.json();
@@ -452,7 +433,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
                   </motion.div>
                 </div>
 
-                {/* Stock Status */}
                 {product.quantity <= 5 && product.quantity > 0 && (
                   <motion.div 
                     initial={{ opacity: 0 }}
@@ -467,7 +447,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
 
               <Separator className="my-8" />
 
-              {/* Service Icons - Zara premium style */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -505,14 +484,12 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
 
               <Separator className="my-8" />
 
-              {/* Expandable Sections - Sophisticated Zara style */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.6 }}
                 className="space-y-1"
               >
-                {/* Product Details */}
                 <div className="border-b border-neutral-100">
                   <motion.button
                     whileHover={{ backgroundColor: 'rgba(0,0,0,0.02)' }}
@@ -555,7 +532,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
                   </AnimatePresence>
                 </div>
 
-                {/* Care Instructions */}
                 <div className="border-b border-neutral-100">
                   <motion.button 
                     whileHover={{ backgroundColor: 'rgba(0,0,0,0.02)' }}
@@ -602,7 +578,6 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
                   </AnimatePresence>
                 </div>
 
-                {/* Delivery & Returns */}
                 <div className="border-b border-neutral-100">
                   <motion.button
                     whileHover={{ backgroundColor: 'rgba(0,0,0,0.02)' }}
@@ -684,148 +659,14 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
             </div>
           </div>
         </div>
+      </div>
 
-        {/* You May Also Like - Enhanced Zara style */}
-        {relatedProducts.length > 0 && (
+      {/* Related Products Section */}
+      {relatedProducts.length > 0 && (
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
           <RelatedProductsSection relatedProducts={relatedProducts} />
-        )}
-      </div>
-    </div>
-  )
-}
-
-// Enhanced Related Products Section
-function RelatedProductsSection({ relatedProducts }: { relatedProducts: Product[] }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: 0.3 }}
-      className="mt-16 sm:mt-20 lg:mt-24 border-t border-neutral-100 pt-12 sm:pt-16 lg:pt-20"
-    >
-      <div className="mb-8 sm:mb-12">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg sm:text-xl lg:text-2xl font-light tracking-wide text-neutral-900">
-            You may also like
-          </h2>
-          <div className="flex items-center space-x-1">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star key={i} size={12} className="fill-yellow-400 text-yellow-400" />
-            ))}
-            <span className="text-xs text-neutral-500 ml-2 font-light">Customer favorites</span>
-          </div>
         </div>
-        <div className="w-12 h-px bg-neutral-900" />
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-        {relatedProducts.slice(0, 4).map((relatedProduct, index) => {
-          const relatedHasDiscount = relatedProduct.currentPrice < relatedProduct.originalPrice
-          const relatedDiscountPercent = relatedHasDiscount ? 
-            Math.round(((relatedProduct.originalPrice - relatedProduct.currentPrice) / relatedProduct.originalPrice) * 100) : 0
-
-          return (
-            <Link href={`/${relatedProduct.slug}`} key={relatedProduct.id}>
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="group cursor-pointer"
-              >
-                <Card className="border-0 shadow-none bg-transparent overflow-hidden">
-                  <CardContent className="p-0">
-                    <div className="relative overflow-hidden bg-neutral-50 mb-3 sm:mb-4">
-                      <AspectRatio ratio={3/4}>
-                        <Image
-                          src={`https://res.cloudinary.com/dpj5r6jrg/image/upload/${relatedProduct.mainImage}.jpg`}
-                          alt={relatedProduct.name}
-                          fill
-                          className="object-cover transition-transform duration-700 group-hover:scale-105"
-                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                        />
-                        
-                        {/* Enhanced hover overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3 sm:p-4">
-                          <motion.div
-                            initial={{ y: 20, opacity: 0 }}
-                            whileHover={{ y: 0, opacity: 1 }}
-                            className="w-full"
-                          >
-                            <Button 
-                              size="sm"
-                              className="w-full h-8 sm:h-9 bg-white/95 text-neutral-900 hover:bg-white text-[10px] sm:text-xs font-light tracking-wide border-0 backdrop-blur-sm"
-                              onClick={(e) => {
-                                e.preventDefault()
-                                e.stopPropagation()
-                              }}
-                            >
-                              Quick Add
-                            </Button>
-                          </motion.div>
-                        </div>
-                        
-                        {/* Product badges */}
-                        {(relatedProduct.isNew || relatedHasDiscount) && (
-                          <div className="absolute top-2 sm:top-3 left-2 sm:left-3 space-y-1">
-                            {relatedProduct.isNew && (
-                              <Badge className="bg-neutral-900 text-white text-[10px] px-2 py-1 font-light">NEW</Badge>
-                            )}
-                            {relatedHasDiscount && (
-                              <Badge className="bg-red-600 text-white text-[10px] px-2 py-1 font-light">
-                                -{relatedDiscountPercent}%
-                              </Badge>
-                            )}
-                          </div>
-                        )}
-                      </AspectRatio>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h3 className="text-sm font-light line-clamp-2 leading-tight text-neutral-900 group-hover:text-neutral-600 transition-colors duration-200">
-                        {relatedProduct.name}
-                      </h3>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-normal text-neutral-900">
-                          ${relatedProduct.currentPrice.toFixed(2)}
-                        </span>
-                        {relatedHasDiscount && (
-                          <>
-                            <span className="text-xs text-neutral-400 line-through font-light">
-                              ${relatedProduct.originalPrice.toFixed(2)}
-                            </span>
-                            <span className="text-[10px] text-red-600 bg-red-50 px-1.5 py-0.5 rounded">
-                              -{relatedDiscountPercent}%
-                            </span>
-                          </>
-                        )}
-                      </div>
-                      
-                      {/* Color options preview */}
-                      {relatedProduct.colors.length > 0 && (
-                        <div className="flex space-x-1 pt-1">
-                          {relatedProduct.colors.slice(0, 4).map((color, colorIndex) => (
-                            <div
-                              key={colorIndex}
-                              className="w-3 h-3 rounded-full border border-neutral-200"
-                              style={{ backgroundColor: color.toLowerCase() === 'white' ? '#fafafa' : color.toLowerCase() }}
-                              title={color}
-                            />
-                          ))}
-                          {relatedProduct.colors.length > 4 && (
-                            <div className="w-3 h-3 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center">
-                              <span className="text-[8px] text-neutral-500">+</span>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </Link>
-          )
-        })}
-      </div>
-    </motion.div>
+      )}
+    </div>
   )
 }
