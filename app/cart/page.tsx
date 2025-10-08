@@ -1,6 +1,6 @@
+// app/cart/page.tsx
 "use client";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
@@ -40,7 +40,8 @@ interface Cart {
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
-export default function CartPage() {
+// Create a client component that uses useSearchParams
+function CartContent() {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const [cart, setCart] = useState<Cart | null>(null);
@@ -393,5 +394,34 @@ export default function CartPage() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function CartLoading() {
+  return (
+    <div className="min-h-screen bg-white">
+      <div className="border-b border-zinc-200">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <nav className="flex items-center space-x-2 text-[10px] uppercase tracking-[0.15em] font-light">
+            <span className="text-zinc-900">Loading cart...</span>
+          </nav>
+        </div>
+      </div>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="text-center py-16">
+          <p className="text-zinc-600 text-[11px] uppercase tracking-[0.12em] font-light">Loading your shopping bag...</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Main page component with Suspense boundary
+export default function CartPage() {
+  return (
+    <Suspense fallback={<CartLoading />}>
+      <CartContent />
+    </Suspense>
   );
 }
