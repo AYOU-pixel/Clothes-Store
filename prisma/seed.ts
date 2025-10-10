@@ -1,10 +1,12 @@
+//seed.ts
 import { PrismaClient } from "../lib/generated/prisma";
 import {
   categoriesData,
   womenProductsData,
   menProductsData,
   accessoryProductsData,
-  kidsProductsData
+  kidsProductsData,
+  editorialData
 } from "./seeds";
 
 const prisma = new PrismaClient();
@@ -121,9 +123,19 @@ async function main() {
     );
     console.log(`✅ Created ${kidsProductsData.length} kids' products`);
 
-    // Step 7: Final verification
+    // Step 7: Create Editorial Content
+    console.log("📰 Creating editorial content...");
+    await createInChunks(
+      editorialData,
+      (editorial) => prisma.editorial.create({ data: editorial }),
+      3
+    );
+    console.log(`✅ Created ${editorialData.length} editorial pieces`);
+
+    // Step 8: Final verification
     const totalProducts = await prisma.product.count();
     const totalCategories = await prisma.category.count();
+    const totalEditorials = await prisma.editorial.count();
 
     console.log("\n📊 Database Summary:");
     console.log(`Categories: ${totalCategories}`);
@@ -132,6 +144,7 @@ async function main() {
     console.log(`- Men: ${menProductsData.length}`);
     console.log(`- Accessories: ${accessoryProductsData.length}`);
     console.log(`- Kids: ${kidsProductsData.length}`);
+    console.log(`Editorials: ${totalEditorials}`); 
 
   } catch (error) {
     console.error("❌ Error during seeding:", error);

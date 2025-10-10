@@ -3,3 +3,4 @@ export { womenProductsData } from './womenProducts';
 export { menProductsData } from './menProducts';
 export { accessoryProductsData } from './accessories';
 export { kidsProductsData } from './kidsProducts';
+export { editorialData } from './editorialData';

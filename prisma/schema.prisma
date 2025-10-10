@@ -85,7 +85,8 @@ model Editorial {
   excerpt     String?
   content     String
   mainImage   String?
-  images      String[]
+  video       String?  // Added video field
+  mainVideo   String?  // ✅ This is your hero video
   tags        String[]
   isPublished Boolean  @default(false)
   publishedAt DateTime?

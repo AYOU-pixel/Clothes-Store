@@ -1,3 +1,4 @@
+//men page.tsx
 import { prisma } from '@/lib/prisma'
 import MenProductsClient from "@/components/MenProductsClient"
 
