@@ -7,22 +7,27 @@ import { Button } from "@/components/ui/button"
 export default function Hero() {
   return (
     <section className="relative h-screen min-h-[600px] max-h-[800px] w-full overflow-hidden">
-      {/* Background with responsive fixes */}
+      {/* Video Background */}
       <motion.div
         initial={{ scale: 1.1 }}
         animate={{ scale: 1 }}
         transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
         className="absolute inset-0"
       >
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: "url('/images/otfit.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat"
-          }}
-        />
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source
+            src="https://res.cloudinary.com/dpj5r6jrg/video/upload/6010460_4k_Beautiful_3840x2160_l3aqvs.mp4"
+            type="video/mp4"
+          />
+          Your browser does not support the video tag.
+        </video>
+        
         {/* Enhanced overlay for better text readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-black/50" />
       </motion.div>

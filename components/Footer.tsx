@@ -5,223 +5,165 @@ import Link from "next/link"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Facebook, Instagram, Twitter, MapPin, Phone, Mail } from "lucide-react"
-import { motion } from "framer-motion"
 
 export default function Footer() {
   return (
-    <motion.footer
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-      viewport={{ once: true }}
-      className="bg-black text-white"
-      style={{ fontFamily: '"Inter", sans-serif' }}
+    <footer
+      className="bg-[#0a0a0a] text-white border-t border-[#1a1a1a]"
     >
-      <div className="container mx-auto px-4 py-16">
+      <div className="max-w-[1400px] mx-auto px-8 py-20">
         {/* Main Footer Content */}
-        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-16">
           
-          {/* Brand Section - Zara style */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.6 }}
-            viewport={{ once: true }}
-            className="lg:col-span-1"
-          >
-            <h2 
-              className="text-2xl font-thin tracking-[0.1em] mb-6"
-              style={{ fontFamily: '"Playfair Display", serif' }}
-            >
+          {/* Brand Section */}
+          <div className="space-y-6">
+            <h2 className="text-base font-medium tracking-[0.3em] uppercase">
               AURA
             </h2>
-            <p className="text-sm font-light text-gray-400 leading-relaxed mb-6">
-              Discover timeless elegance and contemporary style. 
-              Crafting exceptional fashion experiences since our founding.
+            <p className="text-[11px] leading-[1.7] text-[#999999] tracking-[0.02em] font-light max-w-[240px]">
+              Timeless design meets modern elegance. Discover our curated collections.
             </p>
             
-            {/* Contact Info - Zara style */}
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3 text-xs text-gray-400">
-                <MapPin size={14} />
-                <span className="font-light tracking-wide">New York, NY 10001</span>
+            {/* Contact Info */}
+            <div className="space-y-3 pt-2">
+              <div className="flex items-start gap-3 text-[11px] text-[#999999]">
+                <MapPin size={12} className="mt-[3px] flex-shrink-0 opacity-60" />
+                <span className="font-light tracking-[0.02em] leading-[1.6]">123 Fifth Avenue<br />New York, NY 10001</span>
               </div>
-              <div className="flex items-center space-x-3 text-xs text-gray-400">
-                <Phone size={14} />
-                <span className="font-light tracking-wide">+1 (555) 123-4567</span>
+              <div className="flex items-center gap-3 text-[11px] text-[#999999]">
+                <Phone size={12} className="opacity-60 flex-shrink-0" />
+                <span className="font-light tracking-[0.02em]">+1 (212) 555-0100</span>
               </div>
-              <div className="flex items-center space-x-3 text-xs text-gray-400">
-                <Mail size={14} />
-                <span className="font-light tracking-wide">hello@aura.com</span>
+              <div className="flex items-center gap-3 text-[11px] text-[#999999]">
+                <Mail size={12} className="opacity-60 flex-shrink-0" />
+                <span className="font-light tracking-[0.02em]">info@aura.com</span>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Shop Links */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="text-xs font-light tracking-[0.15em] uppercase mb-6 text-gray-300">
-              Collections
+          <div>
+            <h3 className="text-[11px] font-medium tracking-[0.25em] uppercase mb-7 text-white">
+              Shop
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-[14px]">
               {[
-                { name: "Men", href: "/men" },
-                { name: "Women", href: "/women" },
-                { name: "Accessories", href: "/accessories" },
-                { name: "New Arrivals", href: "/new" },
-                { name: "Sale", href: "/sale" },
-                { name: "Editorial", href: "/editorial" }
+                { name: "Woman", href: "/women" },
+                { name: "Man", href: "/men" },
+                { name: "Kids", href: "/kids" },
+                { name: "Beauty", href: "/beauty" },
+                { name: "Join Life", href: "/join-life" }
               ].map((item) => (
                 <li key={item.name}>
                   <Link 
                     href={item.href} 
-                    className="text-sm font-light text-white hover:text-gray-300 transition-colors duration-300 tracking-wide"
+                    className="text-[11px] font-light text-[#999999] hover:text-white transition-colors duration-200 tracking-[0.02em]"
                   >
                     {item.name}
                   </Link>
                 </li>
               ))}
             </ul>
-          </motion.div>
+          </div>
 
           {/* Company Links */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="text-xs font-light tracking-[0.15em] uppercase mb-6 text-gray-300">
+          <div>
+            <h3 className="text-[11px] font-medium tracking-[0.25em] uppercase mb-7 text-white">
               Company
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-[14px]">
               {[
-                { name: "About Us", href: "/about" },
+                { name: "About", href: "/about" },
                 { name: "Careers", href: "/careers" },
                 { name: "Press", href: "/press" },
                 { name: "Sustainability", href: "/sustainability" },
-                { name: "Size Guide", href: "/size-guide" },
-                { name: "Store Locator", href: "/stores" }
+                { name: "Stores", href: "/stores" }
               ].map((item) => (
                 <li key={item.name}>
                   <Link 
                     href={item.href} 
-                    className="text-sm font-light text-white hover:text-gray-300 transition-colors duration-300 tracking-wide"
+                    className="text-[11px] font-light text-[#999999] hover:text-white transition-colors duration-200 tracking-[0.02em]"
                   >
                     {item.name}
                   </Link>
                 </li>
               ))}
             </ul>
-          </motion.div>
+          </div>
 
-          {/* Newsletter & Social - Zara premium style */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="text-xs font-light tracking-[0.15em] uppercase mb-6 text-gray-300">
-              Stay Connected
+          {/* Newsletter & Social */}
+          <div>
+            <h3 className="text-[11px] font-medium tracking-[0.25em] uppercase mb-7 text-white">
+              Newsletter
             </h3>
             
-            {/* Newsletter Form - Minimal Zara style */}
-            <form className="space-y-4 mb-8">
+            {/* Newsletter Form */}
+            <form className="space-y-3 mb-10">
               <Input
                 type="email"
-                placeholder="Enter your email"
-                className="bg-transparent border border-gray-700 text-white placeholder:text-gray-500 h-12 px-4 text-sm font-light focus:border-white transition-colors duration-300"
-                style={{ borderRadius: '0px' }}
+                placeholder="Email address"
+                className="bg-transparent border-[#2a2a2a] text-white placeholder:text-[#666666] h-11 px-4 text-[11px] font-light tracking-[0.02em] rounded-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-white transition-colors"
               />
               <Button
                 type="submit"
-                className="w-full h-12 bg-white text-black hover:bg-gray-200 font-light text-xs tracking-[0.1em] uppercase transition-colors duration-300"
-                style={{ borderRadius: '0px' }}
+                className="w-full h-11 bg-white text-black hover:bg-[#e6e6e6] font-normal text-[10px] tracking-[0.2em] uppercase rounded-none transition-colors"
               >
                 Subscribe
               </Button>
             </form>
 
-            {/* Social Links - Minimal icons */}
-            <div className="flex space-x-4 mb-6">
-              {[
-                { icon: Instagram, href: "https://instagram.com", label: "Instagram" },
-                { icon: Facebook, href: "https://facebook.com", label: "Facebook" },
-                { icon: Twitter, href: "https://twitter.com", label: "Twitter" }
-              ].map(({ icon: Icon, href, label }) => (
-                <Link 
-                  key={label}
-                  href={href} 
-                  className="w-10 h-10 border border-gray-700 flex items-center justify-center hover:border-white hover:bg-white hover:text-black transition-all duration-300 group"
-                  aria-label={label}
-                >
-                  <Icon size={16} className="text-gray-400 group-hover:text-black transition-colors duration-300" />
-                </Link>
-              ))}
-            </div>
-
-            {/* App Download - Zara style */}
-            <div className="space-y-2">
-              <p className="text-xs font-light tracking-[0.1em] uppercase text-gray-400 mb-3">
-                Download App
+            {/* Social Links */}
+            <div className="space-y-6">
+              <p className="text-[11px] font-medium tracking-[0.25em] uppercase text-white">
+                Follow Us
               </p>
-              <div className="flex space-x-2">
-                <div className="px-3 py-2 border border-gray-700 text-xs font-light tracking-wide hover:border-white transition-colors duration-300 cursor-pointer">
-                  App Store
-                </div>
-                <div className="px-3 py-2 border border-gray-700 text-xs font-light tracking-wide hover:border-white transition-colors duration-300 cursor-pointer">
-                  Google Play
-                </div>
+              <div className="flex gap-3">
+                {[
+                  { icon: Instagram, href: "https://instagram.com", label: "Instagram" },
+                  { icon: Facebook, href: "https://facebook.com", label: "Facebook" },
+                  { icon: Twitter, href: "https://twitter.com", label: "Twitter" }
+                ].map(({ icon: Icon, href, label }) => (
+                  <Link 
+                    key={label}
+                    href={href} 
+                    className="w-9 h-9 border border-[#2a2a2a] flex items-center justify-center hover:border-white hover:bg-white transition-all duration-200 group rounded-none"
+                    aria-label={label}
+                  >
+                    <Icon size={14} className="text-[#999999] group-hover:text-black transition-colors" />
+                  </Link>
+                ))}
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
 
-        {/* Zara-style divider */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          whileInView={{ scaleX: 1 }}
-          transition={{ delay: 0.6, duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-          viewport={{ once: true }}
-          className="w-full h-[1px] bg-gray-800 my-12"
-        />
+        {/* Divider */}
+        <div className="w-full h-[1px] bg-[#1a1a1a] my-12" />
 
-        {/* Bottom Section - Legal & Copyright */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-          viewport={{ once: true }}
-          className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
-        >
-          <div className="flex flex-wrap gap-6 text-xs font-light text-gray-400">
+        {/* Bottom Section */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-[10px] font-light text-[#666666]">
             {[
               "Privacy Policy",
-              "Terms of Service", 
-              "Cookie Policy",
-              "Accessibility",
-              "Returns & Exchanges"
+              "Terms of Use", 
+              "Cookie Settings",
+              "Accessibility"
             ].map((link) => (
               <Link 
                 key={link}
-                href={`/${link.toLowerCase().replace(/\s+/g, '-').replace('&', 'and')}`}
-                className="hover:text-white transition-colors duration-300 tracking-wide"
+                href={`/${link.toLowerCase().replace(/\s+/g, '-')}`}
+                className="hover:text-white transition-colors duration-200 tracking-[0.05em]"
               >
                 {link}
               </Link>
             ))}
           </div>
           
-          <div className="text-xs font-light text-gray-400 tracking-wide">
+          <div className="text-[10px] font-light text-[#666666] tracking-[0.05em]">
             © {new Date().getFullYear()} AURA. All rights reserved.
           </div>
-        </motion.div>
+        </div>
       </div>
-    </motion.footer>
+    </footer>
   )
 }

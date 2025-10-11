@@ -45,9 +45,9 @@ interface MenProductsClientProps {
 }
 
 export default function MenProductsClient({ products = [] }: MenProductsClientProps) {
-  const router = useRouter() // ← إضافة هذا
+  const router = useRouter()
 
-  // دالة للانتقال إلى صفحة المنتج
+ 
   const handleProductClick = (productSlug: string) => {
     router.push(`/${productSlug}`)
   }
