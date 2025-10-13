@@ -1,5 +1,4 @@
 "use client"
-
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
@@ -7,12 +6,31 @@ import { ChevronDown } from "lucide-react"
 
 export default function Hero() {
   const [isLoading, setIsLoading] = useState(true)
+  const [videoReady, setVideoReady] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
-  // Simulate video loading or delay
+  // Detect mobile for optimized video
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1800) // 1.8s
-    return () => clearTimeout(timer)
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
   }, [])
+
+  // Handle video readiness
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!videoReady) {
+        setIsLoading(false)
+      }
+    }, 2500) // Fallback timeout
+    return () => clearTimeout(timer)
+  }, [videoReady])
+
+  const handleVideoCanPlay = () => {
+    setVideoReady(true)
+    setTimeout(() => setIsLoading(false), 300) // Brief delay for smooth transition
+  }
 
   const scrollToContent = () => {
     window.scrollTo({
@@ -22,7 +40,7 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative h-[100svh] min-h-[500px] md:min-h-[600px] lg:min-h-[700px] max-h-[900px] w-full overflow-hidden">
+    <section className="relative h-[100svh] min-h-[500px] md:min-h-[600px] lg:min-h-[700px] max-h-[900px] w-full overflow-hidden bg-black">
       
       {/* ===== 🎬 PRELOADER OVERLAY ===== */}
       <AnimatePresence>
@@ -31,31 +49,31 @@ export default function Hero() {
             key="loader"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
             className="absolute inset-0 bg-black flex flex-col items-center justify-center z-50"
           >
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="text-white uppercase tracking-[0.3em] font-light text-sm sm:text-base"
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="text-white uppercase tracking-[0.3em] font-light text-xs sm:text-sm"
               style={{ fontFamily: '"Inter", sans-serif' }}
             >
               Loading
             </motion.div>
 
-            {/* Small animation dots */}
+            {/* Animated dots */}
             <motion.div
-              className="flex gap-1 mt-2"
+              className="flex gap-2 mt-3"
               initial="hidden"
               animate="visible"
               variants={{
                 hidden: {},
                 visible: {
                   transition: {
-                    staggerChildren: 0.25,
+                    staggerChildren: 0.2,
                     repeat: Infinity,
-                    repeatDelay: 0.8,
+                    repeatDelay: 0.6,
                   },
                 },
               }}
@@ -63,15 +81,29 @@ export default function Hero() {
               {[0, 1, 2].map((i) => (
                 <motion.span
                   key={i}
-                  className="w-1.5 h-1.5 rounded-full bg-white/70"
+                  className="w-1 h-1 rounded-full bg-white/70"
                   variants={{
-                    hidden: { opacity: 0.3, y: 0 },
-                    visible: { opacity: 1, y: -3 },
+                    hidden: { opacity: 0.4, scale: 0.8 },
+                    visible: { opacity: 1, scale: 1 },
                   }}
-                  transition={{ duration: 0.4, repeat: Infinity, repeatType: "reverse" }}
-
+                  transition={{ duration: 0.3, repeat: Infinity, repeatType: "reverse" }}
                 />
               ))}
+            </motion.div>
+
+            {/* Progress bar */}
+            <motion.div
+              className="mt-6 h-0.5 bg-white/20 rounded-full overflow-hidden w-16"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <motion.div
+                className="h-full bg-white/70"
+                initial={{ width: "0%" }}
+                animate={{ width: "90%" }}
+                transition={{ duration: 2, ease: "easeInOut" }}
+              />
             </motion.div>
           </motion.div>
         )}
@@ -79,9 +111,9 @@ export default function Hero() {
 
       {/* ===== 🌄 VIDEO BACKGROUND ===== */}
       <motion.div
-        initial={{ scale: 1.1 }}
+        initial={{ scale: 1.05 }}
         animate={{ scale: 1 }}
-        transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+        transition={{ duration: 1.4, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.2 }}
         className="absolute inset-0"
       >
         <video
@@ -89,40 +121,52 @@ export default function Hero() {
           muted
           loop
           playsInline
-          preload="auto"
-          onLoadedData={() => setIsLoading(false)}
+          preload="metadata"
+          onCanPlay={handleVideoCanPlay}
+          onLoadedData={handleVideoCanPlay}
           className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            willChange: "transform",
+            backfaceVisibility: "hidden",
+          }}
         >
           <source
             src="https://res.cloudinary.com/dpj5r6jrg/video/upload/6010460_4k_Beautiful_3840x2160_l3aqvs.mp4"
             type="video/mp4"
           />
         </video>
+        
+        {/* Solid color fallback while loading */}
+        {!videoReady && (
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-black" />
+        )}
+        
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/25 to-black/60" />
       </motion.div>
 
       {/* ===== 🧭 MAIN CONTENT ===== */}
-      <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white px-4 sm:px-6 md:px-8 lg:px-12">
+      <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-white px-4 sm:px-6 md:px-8">
         <motion.h1
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.4 }}
-          className="text-[2.5rem] xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-thin tracking-[0.02em] mb-4"
+          transition={{ duration: 0.9, delay: 0.5, ease: "easeOut" }}
+          className="text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-thin tracking-[0.02em] mb-3 sm:mb-4"
           style={{
             fontFamily: '"Playfair Display", "Times New Roman", serif',
             textShadow: "0 2px 20px rgba(0,0,0,0.4)",
+            lineHeight: "1.1",
           }}
         >
           ELEVATE
           <br />
-          <span className="font-light italic text-[0.85em]">Your Style</span>
+          <span className="font-light italic text-[0.82em]">Your Style</span>
         </motion.h1>
 
         <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9, duration: 0.8 }}
-          className="text-xs sm:text-sm md:text-base font-light tracking-[0.15em] uppercase max-w-sm md:max-w-lg mb-8 leading-relaxed"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1, duration: 0.7, ease: "easeOut" }}
+          className="text-xs sm:text-sm md:text-base font-light tracking-[0.12em] uppercase max-w-xs sm:max-w-sm md:max-w-lg mb-6 sm:mb-8 leading-relaxed"
           style={{
             fontFamily: '"Inter", sans-serif',
             textShadow: "0 1px 10px rgba(0,0,0,0.3)",
@@ -134,12 +178,12 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.4, duration: 0.6 }}
+          transition={{ delay: 1.3, duration: 0.6, ease: "easeOut" }}
         >
           <Button
             size="lg"
             onClick={scrollToContent}
-            className="group relative px-8 py-3 bg-transparent border border-white/70 text-white font-light text-sm tracking-[0.12em] uppercase hover:bg-white hover:text-black transition-all duration-500 backdrop-blur-sm"
+            className="group relative px-6 sm:px-8 py-2.5 sm:py-3 bg-transparent border border-white/70 text-white font-light text-xs sm:text-sm tracking-[0.12em] uppercase hover:bg-white hover:text-black transition-all duration-500 backdrop-blur-sm"
             style={{
               fontFamily: '"Inter", sans-serif',
               borderRadius: "0px",
@@ -156,14 +200,15 @@ export default function Hero() {
         onClick={scrollToContent}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 0.6 }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        transition={{ delay: 1.8, duration: 0.6 }}
+        className="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-20"
+        aria-label="Scroll to content"
       >
         <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ y: [0, 12, 0] }}
+          transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <ChevronDown className="w-6 h-6 text-white/60" strokeWidth={1} />
+          <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-white/60 hover:text-white/80 transition-colors" strokeWidth={1} />
         </motion.div>
       </motion.button>
     </section>
