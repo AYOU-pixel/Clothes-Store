@@ -66,3 +66,13 @@
   }
 }
 
+
+@keyframes shimmer {
+  0% { background-position: -500px 0; }
+  100% { background-position: 500px 0; }
+}
+.animate-\[shimmer_1\.5s_infinite\] {
+  background-size: 1000px 100%;
+}
+
+

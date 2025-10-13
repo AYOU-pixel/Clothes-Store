@@ -1,3 +1,4 @@
+// app/editorial/page.tsx
 import { prisma } from '@/lib/prisma'
 import EditorialClient from "@/components/EditorialClient"
 

@@ -1,3 +1,4 @@
+// app/new-arrivals/page.tsx
 import { prisma } from '@/lib/prisma'
 import NewArrivalsClient from "@/components/NewArrivalsClient"
 
