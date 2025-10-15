@@ -1,7 +1,9 @@
+import Cart from "@/app/cart/page"
+
 export default function Orders() {
   return (
     <div>
-        <h1>orders</h1>
+    <Cart />
     </div>
   )
 }
