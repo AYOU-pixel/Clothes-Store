@@ -28,7 +28,7 @@ export default function Footer() {
             <div className="space-y-3 pt-2">
               <div className="flex items-start gap-3 text-[11px] text-[#999999]">
                 <MapPin size={12} className="mt-[3px] flex-shrink-0 opacity-60" />
-                <span className="font-light tracking-[0.02em] leading-[1.6]">123 Fifth Avenue<br />New York, NY 10001</span>
+                <span className="font-light tracking-[0.02em] leading-[1.6]">123 Fifth Avenue<br />Madrid, NY 10001</span>
               </div>
               <div className="flex items-center gap-3 text-[11px] text-[#999999]">
                 <Phone size={12} className="opacity-60 flex-shrink-0" />
@@ -36,7 +36,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-3 text-[11px] text-[#999999]">
                 <Mail size={12} className="opacity-60 flex-shrink-0" />
-                <span className="font-light tracking-[0.02em]">info@aura.com</span>
+                <span className="font-light tracking-[0.02em]">aura@gmail.com</span>
               </div>
             </div>
           </div>
@@ -50,9 +50,7 @@ export default function Footer() {
               {[
                 { name: "Woman", href: "/women" },
                 { name: "Man", href: "/men" },
-                { name: "Kids", href: "/kids" },
-                { name: "Beauty", href: "/beauty" },
-                { name: "Join Life", href: "/join-life" }
+                { name: "Kids", href: "/kids" }
               ].map((item) => (
                 <li key={item.name}>
                   <Link 
@@ -74,10 +72,7 @@ export default function Footer() {
             <ul className="space-y-[14px]">
               {[
                 { name: "About", href: "/about" },
-                { name: "Careers", href: "/careers" },
-                { name: "Press", href: "/press" },
-                { name: "Sustainability", href: "/sustainability" },
-                { name: "Stores", href: "/stores" }
+                { name: "Careers", href: "/editorial" }
               ].map((item) => (
                 <li key={item.name}>
                   <Link 

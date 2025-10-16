@@ -12,8 +12,6 @@ import {
   Package, 
   Heart, 
   MapPin, 
-  CreditCard, 
-  Bell,
   Shield,
   LogOut,
   Settings
@@ -103,7 +101,7 @@ export default function UserPage() {
               {[
                 { icon: Package, label: "Track Orders" },
                 { icon: Heart, label: "Save Favorites" },
-                { icon: Bell, label: "Get Updates" }
+                { icon: Shield, label: "Secure Account" }
               ].map((item, i) => (
                 <div key={i} className="text-center">
                   <item.icon className="h-6 w-6 mx-auto mb-2 text-gray-400" strokeWidth={1} />
@@ -122,9 +120,7 @@ export default function UserPage() {
     { icon: Package, label: "My Orders", href: "/user/orders", desc: "Track and manage your orders" },
     { icon: Heart, label: "Wishlist", href: "/user/wishlist", desc: "View saved items" },
     { icon: MapPin, label: "Addresses", href: "/user/addresses", desc: "Manage shipping addresses" },
-    { icon: CreditCard, label: "Payment Methods", href: "/user/payment", desc: "Saved payment options" },
-    { icon: Bell, label: "Notifications", href: "/user/notifications", desc: "Manage your preferences" },
-    { icon: Shield, label: "Privacy & Security", href: "/user/security", desc: "Account protection" }
+    { icon: Shield, label: "Privacy & Security", href: "/privacy-policy", desc: "Account protection" }
   ]
 
   return (
@@ -315,23 +311,6 @@ export default function UserPage() {
                   </p>
                 </div>
               ))}
-            </div>
-
-            <div className="mt-6 pt-4 border-t border-gray-100 text-center">
-              <Link 
-                href="/user/activity"
-                className="text-sm font-light text-black hover:text-gray-600 tracking-wide uppercase inline-flex items-center group"
-              >
-                View All Activity
-                <svg 
-                  className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
             </div>
           </Card>
         </motion.div>
