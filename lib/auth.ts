@@ -1,3 +1,4 @@
+// lib/auth.ts
 import { NextAuthOptions } from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
@@ -22,7 +23,6 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user, trigger, session }) {
-      // Initial sign in
       if (user) {
         token.id = user.id;
         token.name = user.name;
@@ -30,7 +30,6 @@ export const authOptions: NextAuthOptions = {
         token.picture = user.image;
       }
       
-      // Update session when user updates their profile
       if (trigger === "update" && session?.user) {
         token.name = session.user.name;
         token.email = session.user.email;
@@ -39,7 +38,6 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      // Add user data to session from token
       if (session.user && token.id) {
         session.user.id = token.id as string;
         session.user.name = token.name as string;
@@ -54,5 +52,5 @@ export const authOptions: NextAuthOptions = {
     signIn: "/user",
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === "development", // Disable in production
+  debug: process.env.NODE_ENV === "development",
 };
