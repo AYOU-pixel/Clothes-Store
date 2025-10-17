@@ -1,6 +1,5 @@
 // app/user/page.tsx
 "use client"
-
 import { signIn, signOut, useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -14,13 +13,37 @@ import {
   MapPin, 
   Shield,
   LogOut,
-  Settings
+  Settings,
+  Phone
 } from "lucide-react"
 import Link from "next/link"
 import { UserAvatar } from "@/components/UserAvatar"
+import { useEffect, useState } from "react"
 
 export default function UserPage() {
   const { data: session, status } = useSession()
+  const [userData, setUserData] = useState<any>(null)
+
+  // Fetch additional user data including phone
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (session?.user?.id) {
+        try {
+          const res = await fetch('/api/user/update', {
+            method: 'GET',
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setUserData(data.user);
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [session]);
 
   // Loading state
   if (status === "loading") {
@@ -173,6 +196,15 @@ export default function UserPage() {
                   <Mail className="h-4 w-4" strokeWidth={1.5} />
                   <span className="font-light">{session.user?.email}</span>
                 </div>
+                {userData?.phone && (
+                  <>
+                    <div className="hidden sm:block text-gray-300">•</div>
+                    <div className="flex items-center space-x-2">
+                      <Phone className="h-4 w-4" strokeWidth={1.5} />
+                      <span className="font-light">{userData.phone}</span>
+                    </div>
+                  </>
+                )}
                 <div className="hidden sm:block text-gray-300">•</div>
                 <div className="flex items-center space-x-2">
                   <Calendar className="h-4 w-4" strokeWidth={1.5} />

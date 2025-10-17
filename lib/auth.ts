@@ -1,4 +1,3 @@
-// lib/auth.ts
 import { NextAuthOptions } from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
@@ -19,36 +18,35 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, trigger, session }) {
       // Initial sign in
       if (user) {
         token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.picture = user.image;
       }
+      
+      // Update session when user updates their profile
+      if (trigger === "update" && session?.user) {
+        token.name = session.user.name;
+        token.email = session.user.email;
+      }
+      
       return token;
     },
     async session({ session, token }) {
-      // Add user id to session from token
+      // Add user data to session from token
       if (session.user && token.id) {
         session.user.id = token.id as string;
+        session.user.name = token.name as string;
+        session.user.email = token.email as string;
+        session.user.image = token.picture as string;
       }
-      // Workaround: If ID still missing, fetch from DB by email (only on first sign-in or token issues)
-      else if (session.user?.email && !session.user.id) {
-        try {
-          const dbUser = await prisma.user.findUnique({
-            where: { email: session.user.email },
-            select: { id: true },
-          });
-          if (dbUser) {
-            session.user.id = dbUser.id;
-            // Also update token for future requests
-            token.id = dbUser.id;
-          }
-        } catch (error) {
-          console.error("Error fetching user ID in session callback:", error);
-        }
-      }
+      
       return session;
     },
   },
@@ -56,5 +54,5 @@ export const authOptions: NextAuthOptions = {
     signIn: "/user",
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === "development",
+  debug: process.env.NODE_ENV === "development", // Disable in production
 };
