@@ -151,7 +151,6 @@ export async function POST(request: Request) {
   }
 }
 
-// Similar optimizations for PUT and DELETE...
 export async function PUT(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {

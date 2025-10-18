@@ -1,4 +1,3 @@
-// components/Header/Header.tsx
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -30,7 +29,7 @@ export default function Header() {
       const response = await fetch("/api/cart");
       if (response.ok) {
         const cart = await response.json();
-        const count = cart?.items.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
+        const count = cart?.items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
         setCartCount(count);
       } else {
         setCartCount(0);
@@ -46,46 +45,35 @@ export default function Header() {
     fetchCartCount();
   }, [fetchCartCount]);
 
-  // Periodic refetch every 30 seconds (adjust as needed)
+  // Periodic refetch every 30 seconds
   useEffect(() => {
     if (!session?.user) return;
 
-    const interval = setInterval(fetchCartCount, 30000); // 30 seconds
-
+    const interval = setInterval(fetchCartCount, 30000);
     return () => clearInterval(interval);
-  }, [fetchCartCount]);
-
-  // Refetch on window focus (e.g., when returning to tab after adding to cart elsewhere)
-  useEffect(() => {
-    const handleFocus = () => {
-      if (session?.user) {
-        fetchCartCount();
-      }
-    };
-
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && session?.user) {
-        fetchCartCount();
-      }
-    });
-
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('visibilitychange', handleFocus);
-    };
   }, [fetchCartCount, session]);
 
-  // Listen for cart update events
+  // Enhanced event listeners for cart updates
   useEffect(() => {
     const handleCartUpdate = () => {
+      console.log('Cart update event received');
       fetchCartCount();
     };
 
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'cartUpdated') {
+        fetchCartCount();
+      }
+    };
+
     window.addEventListener('cartUpdated', handleCartUpdate);
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('focus', fetchCartCount);
 
     return () => {
       window.removeEventListener('cartUpdated', handleCartUpdate);
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', fetchCartCount);
     };
   }, [fetchCartCount]);
 
@@ -96,7 +84,6 @@ export default function Header() {
     { label: "KIDS", href: "/kids" },
     { label: "ACCESSORIES", href: "/accessories" },
     { label: "EDITORIAL", href: "/editorial" },
-    { label: "SALE", href: "/sale" },
   ];
 
   const userMenuItems = [
@@ -446,7 +433,7 @@ export default function Header() {
                     <Badge
                       className="absolute -top-0.5 sm:-top-1 -right-0.5 sm:-right-1 w-3.5 h-3.5 sm:w-4 sm:h-4 p-0 bg-black text-white text-[9px] sm:text-[10px] font-light rounded-full flex items-center justify-center"
                     >
-                      {cartCount}
+                      {cartCount > 99 ? '99+' : cartCount}
                     </Badge>
                   )}
                 </Link>

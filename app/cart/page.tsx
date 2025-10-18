@@ -1,4 +1,3 @@
-// app/cart/page.tsx
 "use client";
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
@@ -40,6 +39,12 @@ interface Cart {
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
+// Helper function to trigger cart updates
+const triggerCartUpdate = () => {
+  window.dispatchEvent(new CustomEvent('cartUpdated'));
+  localStorage.setItem('cartUpdated', Date.now().toString());
+}
+
 // Create a client component that uses useSearchParams
 function CartContent() {
   const { data: session } = useSession();
@@ -54,6 +59,7 @@ function CartContent() {
     if (searchParams.get("success")) {
       setNotification("Payment successful! Your order is being processed.");
       setCart(null); // Clear cart on success
+      triggerCartUpdate(); // Update header count
     } else if (searchParams.get("canceled")) {
       setNotification("Checkout was canceled. Your items are still in the cart.");
     }
@@ -105,6 +111,7 @@ function CartContent() {
       }
       const updatedCart = await response.json();
       setCart(updatedCart);
+      triggerCartUpdate(); // Update header count
     } catch (error) {
       setError("Error updating quantity");
     } finally {
@@ -129,6 +136,7 @@ function CartContent() {
       }
       const updatedCart = await response.json();
       setCart(updatedCart);
+      triggerCartUpdate(); // Update header count
     } catch (error) {
       setError("Error removing item");
     } finally {
@@ -292,6 +300,7 @@ function CartContent() {
                               whileTap={{ scale: 0.95 }}
                               onClick={() => removeItem(item.id)}
                               className="text-zinc-500 hover:text-zinc-900 transition-colors ml-3"
+                              disabled={isLoading}
                             >
                               <Trash2 size={16} strokeWidth={1} />
                             </motion.button>
@@ -380,7 +389,7 @@ function CartContent() {
                       onClick={handleCheckout}
                       disabled={isLoading}
                     >
-                      Checkout
+                      {isLoading ? "Processing..." : "Checkout"}
                     </Button>
 
                     <p className="text-[10px] text-zinc-500 font-light text-center uppercase tracking-[0.12em]">

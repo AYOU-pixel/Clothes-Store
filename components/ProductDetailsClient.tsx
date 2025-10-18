@@ -1,5 +1,4 @@
 "use client"
-
 import { useState, useCallback } from "react"
 import Image from "next/image"
 import Link from "next/link"
@@ -53,8 +52,14 @@ interface Product {
 
 interface ProductDetailsClientProps {
   product: Product
-  relatedProducts?: Product[] // Add relatedProducts as an optional prop
+  relatedProducts?: Product[]
   isWishlisted?: boolean
+}
+
+// Helper function to trigger cart updates
+const triggerCartUpdate = () => {
+  window.dispatchEvent(new CustomEvent('cartUpdated'));
+  localStorage.setItem('cartUpdated', Date.now().toString());
 }
 
 export default function ProductDetailsClient({ product, relatedProducts = [], isWishlisted = false }: ProductDetailsClientProps) {
@@ -395,7 +400,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
                           });
 
                           if (response.ok) {
-                            window.dispatchEvent(new CustomEvent('cartUpdated'));
+                            triggerCartUpdate();
                           } else {
                             const errorData = await response.json();
                             console.error('Failed to add to cart:', errorData.error);
@@ -645,7 +650,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [], is
                                 <span>Return label included in package</span>
                               </li>
                               <li className="flex items-start space-x-2">
-                                <div className="w-1 h-1 bg-neutral-400 rounded-full mt-2 flex-shrink-0"></div>
+                                <div className="w-1 h-1 bg-neutral-400 rounded-full mt=2 flex-shrink-0"></div>
                                 <span>Refund processed within 5-7 days</span>
                               </li>
                             </ul>
